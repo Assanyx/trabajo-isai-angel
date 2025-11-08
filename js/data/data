@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Bocaditos de patitas - 1 kilo",
+    "price": 28.0,
+    "category":"Bocaditos",
+    "image": "https://www.prettypet.pe/cdn/shop/files/Mesadetrabajo1copia.png?v=1708710336",
+    "description": "Crujientes patitas de pollo deshidratadas, ricas en colágeno, glucosamina y condroitina para articulaciones, y actúan como cepillo dental natural mientras entretienen a tu mascota",
+    "isFavorite": false,
+    "inCart": false
+  },
+  {
+    "id": 2,
+    "name":"Croquetas de molleja - 1 kilo",
+    "price": 26.0,
+    "category": "Croquetas",
+    "image": "https://www.prettypet.pe/cdn/shop/files/Mesadetrabajo1copia3.png?v=170871168",
+    "description": "Premios crujientes 100 % molleja de pollo deshidratada, ricos en proteínas magras, colágeno y minerales, ideales para energía, articulaciones y salud dental.",
+    "isFavorite": false,
+    "inCart": false
+  },
+  {
+    "id": 3,
+    "name": "Premios de hígado",
+    "price": 12.0,
+    "category":"Premios",
+    "image": "https://www.cletoelinfluencer.com/cdn/shop/files/Higado1.png?v=1688152490&width=1445",
+    "description": "Suaves bocaditos de hígado deshidratado, altos en vitaminas A y B, proteínas de calidad para soporte muscular, piel y sistema inmunológico.",
+    "isFavorite": false,
+    "inCart": false
+  },
+  {
+    "id": 4,
+    "name": "Rollitos de cabecita",
+    "price": 36.0,
+    "category":"Bocaditos",
+    "image": "https://mascotify.pe/wp-content/uploads/2023/01/Yamis-Rollitos-sabor-Carne-a-la-Parrilla-Snack-para-perros.png",
+    "description": "Rollitos naturales de cabecita (cartílago y tejido conectivo), aportan colágeno y enzimas, fortalecen mandíbula y favorecen articulaciones y digestión.",
+    "isFavorite": false,
+    "inCart": false 
+  }
+]
