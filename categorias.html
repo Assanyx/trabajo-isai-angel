@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Categoría - EcoVida</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-50">
+    <div id="app"></div>
+
+    <!-- Carga componentes necesarios -->
+    <script type="text/babel" src="js/Navbar.js"></script>
+    <script type="text/babel" src="js/ProductCard.js"></script>
+    <script type="text/babel" src="js/Footer.js"></script>
+    <script type="text/babel" src="js/CategoryPage.js"></script>
+
+    <script type="text/babel">
+      ReactDOM.render(
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <CategoryPage />
+          <Footer />
+        </div>,
+        document.getElementById("app")
+      );
+    </script>
+  </body>
+</html>

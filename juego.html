@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Juego - NutriPet</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #001a33;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #001a33;
+      touch-action: none;
+    }
+    #hud {
+      position: absolute;
+      top: 100px;
+      left: 20px;
+      color: white;
+      font-size: 20px;
+      font-family: sans-serif;
+      z-index: 10;
+    }
+    #hud button {
+      background-color: #2563eb;
+      border: none;
+      padding: 6px 12px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    #hud button:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-blue-600 text-white p-4 text-center font-bold text-xl">
+    NutriPet
+  </header>
+
+  <div id="hud">
+    Tiempo: <span id="timer">0.0</span>s<br />
+    Récord: <span id="record">0.0</span>s<br /><br />
+    <button id="startBtn">Comenzar</button>
+    <button id="pauseBtn">Pausa</button>
+  </div>
+
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <footer class="bg-blue-700 text-white text-center p-4 mt-8">
+    &copy; 2025 NutriPet. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const timerEl = document.getElementById('timer');
+    const recordEl = document.getElementById('record');
+
+    let bestTime = parseFloat(localStorage.getItem('bestTime') || '0');
+    recordEl.textContent = bestTime.toFixed(1);
+
+    let mouseX = canvas.width / 2;
+    let mouseY = canvas.height - 100;
+    let cannons = 1;
+    let bullets = [];
+    let meteorites = [];
+    let lastSpawn = 0;
+    let gameOver = false;
+    let paused = true;
+    let startTime = Date.now();
+    const spawnInterval = 1500;
+
+    function resizeCanvas() {
+      const ratio = 4 / 3;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      if (width / height > ratio) {
+        canvas.height = height;
+        canvas.width = height * ratio;
+      } else {
+        canvas.width = width;
+        canvas.height = width / ratio;
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // PC control
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      mouseX = (e.clientX - rect.left) * scaleX;
+      mouseY = (e.clientY - rect.top) * scaleY;
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') shoot();
+    });
+
+    // Touch controls
+    let isTouching = false;
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isTouching = true;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      mouseX = (touch.clientX - rect.left) * scaleX;
+      mouseY = (touch.clientY - rect.top) * scaleY;
+      shoot();
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (!isTouching) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      mouseX = (touch.clientX - rect.left) * scaleX;
+      mouseY = (touch.clientY - rect.top) * scaleY;
+    });
+
+    canvas.addEventListener('touchend', () => (isTouching = false));
+
+    function shoot() {
+      for (let i = 0; i < cannons; i++) {
+        bullets.push({ x: mouseX - (cannons - 1) * 10 + i * 20, y: mouseY - 20, speed: 7 });
+      }
+    }
+
+    function spawnMeteorite() {
+      const t = Math.random();
+      let type;
+      if (t < 0.4) type = 'small';
+      else if (t < 0.75) type = 'medium';
+      else type = 'large';
+
+      const hp = type === 'small' ? 1 : type === 'medium' ? 3 : 6;
+      const speedBoost = (Date.now() - startTime) / 60000;
+      const speed = 1 + speedBoost + Math.random() * 1.5;
+
+      meteorites.push({ x: Math.random() * canvas.width, y: -20, type, hp, speed });
+    }
+
+    function update() {
+      if (gameOver || paused) return;
+
+      const elapsed = (Date.now() - startTime) / 1000;
+      timerEl.textContent = elapsed.toFixed(1);
+
+      if (Date.now() - lastSpawn > spawnInterval) {
+        lastSpawn = Date.now();
+        const count = 1 + Math.floor((Date.now() - startTime) / 60000);
+        for (let i = 0; i < count; i++) spawnMeteorite();
+      }
+
+      bullets = bullets.filter((b) => b.y > -10);
+      bullets.forEach((b) => (b.y -= b.speed));
+
+      meteorites.forEach((m) => {
+        m.y += m.speed;
+        if (m.y > canvas.height) endGame();
+      });
+
+      bullets.forEach((b) => {
+        meteorites.forEach((m) => {
+          if (Math.hypot(b.x - m.x, b.y - m.y) < 20) {
+            m.hp--;
+            b.y = -100;
+            if (m.hp <= 0) {
+              if (m.type === 'large' && cannons < 3) cannons++;
+              meteorites.splice(meteorites.indexOf(m), 1);
+            }
+          }
+        });
+      });
+    }
+
+    function endGame() {
+      gameOver = true;
+      const finalTime = (Date.now() - startTime) / 1000;
+      if (finalTime > bestTime) {
+        bestTime = finalTime;
+        localStorage.setItem('bestTime', bestTime);
+        recordEl.textContent = bestTime.toFixed(1);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.moveTo(mouseX, mouseY - 20);
+      ctx.lineTo(mouseX - 15, mouseY + 20);
+      ctx.lineTo(mouseX + 15, mouseY + 20);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = 'cyan';
+      bullets.forEach((b) => ctx.fillRect(b.x - 2, b.y - 10, 4, 10));
+
+      meteorites.forEach((m) => {
+        ctx.fillStyle = m.type === 'small' ? 'gray' : m.type === 'medium' ? 'silver' : 'orange';
+        const size = m.type === 'small' ? 10 : m.type === 'medium' ? 18 : 28;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      if (gameOver) {
+        ctx.fillStyle = 'red';
+        ctx.font = '48px sans-serif';
+        ctx.fillText('¡Perdiste!', canvas.width / 2 - 100, canvas.height / 2);
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+
+    startBtn.onclick = () => {
+      if (gameOver) location.reload();
+      paused = false;
+      startTime = Date.now();
+    };
+
+    pauseBtn.onclick = () => {
+      paused = !paused;
+      if (!paused) startTime = Date.now() - parseFloat(timerEl.textContent) * 1000;
+    };
+
+    loop();
+  </script>
+</body>
+</html>

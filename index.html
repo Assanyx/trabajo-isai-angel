@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoVida - Tienda Saludable</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-50">
+    <div id="app">Cargando EcoVida...</div>
+
+    <!-- React y Babel -->
+    <script
+      src="https://unpkg.com/react@17/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- Componentes en ORDEN CORRECTO -->
+    <!-- 1. Componentes básicos -->
+    <script type="text/babel" src="js/AuthModal.js"></script>
+    <script type="text/babel" src="js/ProductCard.js"></script>
+    <script type="text/babel" src="js/Navbar.js"></script>
+    <script type="text/babel" src="js/Footer.js"></script>
+
+    <!-- 2. Componentes de páginas -->
+    <script type="text/babel" src="js/CartPage.js"></script>
+    <script type="text/babel" src="js/FavoritesPage.js"></script>
+    <script type="text/babel" src="js/ContactPage.js"></script>
+    <script type="text/babel" src="js/UbicacionPage.js"></script>
+    <script type="text/babel" src="js/ProductDetail.js"></script>
+    <script type="text/babel" src="js/AboutPage.js"></script>
+
+    <!-- 4. Componente principal (SIEMPRE AL FINAL) -->
+    <script type="text/babel" src="js/App.js"></script>
+
+    <!-- Renderizado con manejo de errores -->
+    <script type="text/babel">
+      try {
+        ReactDOM.render(<App />, document.getElementById("app"));
+      } catch (error) {
+        document.getElementById("app").innerHTML = `
+        <div class="p-4 text-red-500">
+          <h1 class="text-xl font-bold">Error al cargar la aplicación</h1>
+          <p>${error.message}</p>
+          <p class="mt-2">Por favor revisa la consola para más detalles</p>
+        </div>
+      `;
+        console.error("Error al renderizar:", error);
+      }
+    </script>
+  </body>
+</html>
